@@ -16,7 +16,7 @@ Bloom will consist of an interactive canvas. Several controls will be accessible
 
 Objects will appear when the mouse is over the canvas.
 
-![Wireframe](assets/wireframe.png)
+![Wireframe](assets/images/wireframe.png)
 
 
 ### Technologies

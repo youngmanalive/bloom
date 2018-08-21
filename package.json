@@ -1,16 +1,20 @@
 {
-  "name": "grow",
+  "name": "bloom",
   "version": "1.0.0",
-  "description": "",
-  "main": "bloom.js",
+  "description": "Bloom is a visually appealing mouseover experiment. Simply scan your cursor over the canvas and watch the seeds emerge. These little seeds will burst into a world of colors and sounds.",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack --watch --mode=development"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/youngmanalive/bloom.git"
+  },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "normalize.css": "^8.0.0"
-  }
+  "bugs": {
+    "url": "https://github.com/youngmanalive/bloom/issues"
+  },
+  "homepage": "https://github.com/youngmanalive/bloom#readme"
 }
