@@ -97,6 +97,8 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _seed_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./seed.js */ "./js/seed.js");
 /* harmony import */ var _bloom_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bloom.js */ "./js/bloom.js");
+/* harmony import */ var _test_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./test.js */ "./js/test.js");
+
 
 
 
@@ -191,7 +193,7 @@ class Bloom {
     this.dy = dy;
     this.radius = radius;
     this.color = this.randomColor();
-    this.lifespan = Math.random() * 100 + 300;
+    this.lifespan = Math.random() * 100 + 100;
   }
 
   randomColor() {
@@ -309,14 +311,14 @@ class Seed {
     return colors[Math.floor(Math.random() * colors.length)];
   }
 
-  update(innerWidth, innerHeight, ctx) {
+  update(xDim, yDim, ctx) {
     const gravity = .1;
 
-    if (this.x + this.radius > innerWidth || this.x - this.radius < 0) {
+    if (this.x + this.radius > xDim || this.x - this.radius < 0) {
       this.dx = -this.dx;
     }
 
-    if (this.y + this.radius > innerHeight || this.y - this.radius < 0) {
+    if (this.y + this.radius > yDim || this.y - this.radius < 0) {
       this.dy = -this.dy;
     } else {
       this.dy += gravity;
@@ -339,6 +341,86 @@ class Seed {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Seed);
+
+
+/***/ }),
+
+/***/ "./js/test.js":
+/*!********************!*\
+  !*** ./js/test.js ***!
+  \********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class Flower {
+  constructor(x, y, dx, dy, radius) {
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+    this.radius = radius;
+    this.lifespan = Math.random() * 100 + 300;
+    this.img = this.flowerImg();
+  }
+
+  flowerImg() {
+    const img = new Image();
+    img.src = './assets/images/flowers/8.png';
+
+    return img;
+  }
+
+  createFlowerCanvas() {
+    const flower = document.createElement('canvas');
+    flower.width = this.radius * 2;
+    flower.height = this.radius * 2;
+
+    const fctx = flower.getContext('2d');
+
+    fctx.beginPath();
+    fctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+    fctx.fill();
+
+    fctx.globalCompositeOperation = 'source-atop';
+    fctx.drawImg(this.img, this.x, this.y);
+    fctx.globalCompositeOperation = 'source-over';
+
+    return flower;
+  }
+
+
+  update(xDim, yDim, ctx) {
+    const gravity = .1;
+
+    if (this.x + this.radius > xDim || this.x - this.radius < 0) {
+      this.dx = -this.dx;
+    }
+
+    if (this.y + this.radius > yDim || this.y - this.radius < 0) {
+      this.dy = -this.dy;
+    }
+
+    this.dx = this.dx * 0.95;
+    this.dy = this.dy * 0.95;
+
+    this.x += this.dx;
+    this.y += this.dy;
+    this.lifespan -= 1;
+
+    this.createFlowerCanvas(ctx);
+  }
+
+  // draw(ctx) {
+  //   ctx.beginPath();
+  //   ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+  //   ctx.fill();
+  //   ctx.closePath();
+  // }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Flower);
 
 
 /***/ })

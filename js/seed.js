@@ -21,14 +21,14 @@ class Seed {
     return colors[Math.floor(Math.random() * colors.length)];
   }
 
-  update(innerWidth, innerHeight, ctx) {
+  update(xDim, yDim, ctx) {
     const gravity = .1;
 
-    if (this.x + this.radius > innerWidth || this.x - this.radius < 0) {
+    if (this.x + this.radius > xDim || this.x - this.radius < 0) {
       this.dx = -this.dx;
     }
 
-    if (this.y + this.radius > innerHeight || this.y - this.radius < 0) {
+    if (this.y + this.radius > yDim || this.y - this.radius < 0) {
       this.dy = -this.dy;
     } else {
       this.dy += gravity;

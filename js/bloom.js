@@ -6,7 +6,7 @@ class Bloom {
     this.dy = dy;
     this.radius = radius;
     this.color = this.randomColor();
-    this.lifespan = Math.random() * 100 + 300;
+    this.lifespan = Math.random() * 100 + 100;
   }
 
   randomColor() {

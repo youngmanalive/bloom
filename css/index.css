@@ -29,4 +29,5 @@ canvas {
 }
 
 #range {
+  direction: rtl;
 }

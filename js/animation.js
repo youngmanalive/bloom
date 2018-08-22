@@ -1,5 +1,6 @@
 import Seed from './seed.js';
 import Bloom from './bloom.js';
+import Flower from './test.js';
 
 class Animation {
   constructor(xDim, yDim) {
