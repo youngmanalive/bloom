@@ -96,6 +96,8 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _seed_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./seed.js */ "./js/seed.js");
+/* harmony import */ var _bloom_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bloom.js */ "./js/bloom.js");
+
 
 
 class Animation {
@@ -103,6 +105,7 @@ class Animation {
     this.xDim = xDim;
     this.yDim = yDim;
     this.seeds = [];
+    this.blooms = [];
     this.rate = 7;
   }
 
@@ -115,20 +118,24 @@ class Animation {
     this.seeds.push(new _seed_js__WEBPACK_IMPORTED_MODULE_0__["default"](x, y, dx, dy, radius));
   }
 
-
+  createBloom(seed) {
+    this.blooms.push(new _bloom_js__WEBPACK_IMPORTED_MODULE_1__["default"](
+      seed.x,
+      seed.y,
+      seed.dx,
+      seed.dy,
+      seed.radius
+    ));
+  }
 
   render(canvas) {
     const ctx = canvas.getContext('2d');
     let counter = 1;
 
-    // ctx.fillStyle = "blue";
-    // ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     canvas.addEventListener('mousemove', e => {
       if (counter % this.rate === 0) this.createSeed(e);
       counter++;
     });
-
 
     const animate = () => {
       ctx.clearRect(0, 0, this.xDim, this.yDim);
@@ -138,14 +145,21 @@ class Animation {
         if (seed.lifespan > 0) {
           seed.update(this.xDim, this.yDim, ctx);
         } else {
+          this.createBloom(seed);
           this.seeds.splice(i, 1);
           i--;
         }
       }
 
-      console.log(this.seeds)
-
-      this.rate = document.getElementById('range').value;
+      for (let i = 0; i < this.blooms.length; i++) {
+        let bloom = this.blooms[i];
+        if (bloom.lifespan > 0) {
+          bloom.update(this.xDim, this.yDim, ctx);
+        } else {
+          this.blooms.splice(i, 1);
+          i--;
+        }
+      }
 
       requestAnimationFrame(animate);
     };
@@ -156,6 +170,77 @@ class Animation {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Animation);
+
+
+/***/ }),
+
+/***/ "./js/bloom.js":
+/*!*********************!*\
+  !*** ./js/bloom.js ***!
+  \*********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class Bloom {
+  constructor(x, y, dx, dy, radius) {
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+    this.radius = radius;
+    this.color = this.randomColor();
+    this.lifespan = Math.random() * 100 + 300;
+  }
+
+  randomColor() {
+    const colors = [
+      '#D6D666',
+      '#AC8CF7',
+      '#B8336A',
+      '#FF4F5D',
+      '#09BEE2'
+    ];
+
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  update(xDim, yDim, ctx) {
+    const gravity = .1;
+
+    if (this.x + this.radius > xDim || this.x - this.radius < 0) {
+      this.dx = -this.dx;
+    }
+
+    if (this.y + this.radius > yDim || this.y - this.radius < 0) {
+      this.dy = -this.dy;
+    }
+
+    this.dx = this.dx * 0.95;
+    this.dy = this.dy * 0.95;
+
+    this.x += this.dx;
+    this.y += this.dy;
+    this.lifespan -= 1;
+
+    if (this.radius < 25) {
+      this.radius += 1;
+    }
+
+    this.draw(ctx);
+  }
+
+  draw(ctx) {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius * 2, 0, 2 * Math.PI, false);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.closePath();
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Bloom);
 
 
 /***/ }),
@@ -181,6 +266,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const animation = new _animation_js__WEBPACK_IMPORTED_MODULE_0__["default"](canvas.width, canvas.height);
 
+  const seedRate = document.getElementById('range');
+  seedRate.onchange = () => {
+    animation.rate = seedRate.value;
+  };
+
   animation.render(canvas);
 });
 
@@ -203,7 +293,7 @@ class Seed {
     this.dx = dx;
     this.dy = dy;
     this.radius = radius;
-    this.lifespan = Math.random() * 5000 + 10000;
+    this.lifespan = Math.random() * 100 + 200;
     this.color = this.randomColor();
   }
 
@@ -234,11 +324,7 @@ class Seed {
 
     this.x += this.dx;
     this.y += this.dy;
-    this.lifespan -= 50;
-
-    // if (this.radius < 100) {
-    //   this.radius += 1;
-    // }
+    this.lifespan -= 1;
 
     this.draw(ctx);
   }

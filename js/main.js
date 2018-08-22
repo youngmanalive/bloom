@@ -9,5 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const animation = new Animation(canvas.width, canvas.height);
 
+  const seedRate = document.getElementById('range');
+  seedRate.onchange = () => {
+    animation.rate = seedRate.value;
+  };
+
   animation.render(canvas);
 });
