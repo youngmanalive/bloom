@@ -9,10 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const animation = new Animation(canvas.width, canvas.height);
 
-  const seedRate = document.getElementById('range');
-  seedRate.onchange = () => {
-    animation.rate = seedRate.value;
+  document.getElementById('production').onchange = function() {
+    animation.seedProduction = this.value;
   };
+
+  document.getElementById('velocity').onchange = function() {
+    animation.seedVelocity = this.value;
+  };
+
+  // document.getElementById('gravity').onchange = function() {
+  //   animation.seedGravity = this.value;
+  // };
 
   animation.render(canvas);
 });

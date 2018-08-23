@@ -97,8 +97,6 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _seed_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./seed.js */ "./js/seed.js");
 /* harmony import */ var _bloom_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bloom.js */ "./js/bloom.js");
-/* harmony import */ var _test_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./test.js */ "./js/test.js");
-
 
 
 
@@ -108,19 +106,21 @@ class Animation {
     this.yDim = yDim;
     this.seeds = [];
     this.blooms = [];
-    this.rate = 7;
+    this.seedProduction = 7;
+    this.seedVelocity = 20;
+    this.seedGravity = 0.1;
   }
 
   createSeed(e) {
     const { x, y } = e;
-    const dx = ((Math.random() - 0.5) * 20) + 5;
-    const dy = ((Math.random() - 0.5) * 20) + 5;
-    const radius = Math.random() * 3 + 6;
+    const dx = ((Math.random() - 0.5) * this.seedVelocity);
+    const dy = ((Math.random() - 0.5) * this.seedVelocity);
+    const radius = Math.random() * 3 + 2;
 
     this.seeds.push(new _seed_js__WEBPACK_IMPORTED_MODULE_0__["default"](x, y, dx, dy, radius));
   }
 
-  createBloom(seed) {
+  createFlower(seed) {
     this.blooms.push(new _bloom_js__WEBPACK_IMPORTED_MODULE_1__["default"](
       seed.x,
       seed.y,
@@ -135,19 +135,18 @@ class Animation {
     let counter = 1;
 
     canvas.addEventListener('mousemove', e => {
-      if (counter % this.rate === 0) this.createSeed(e);
+      if (counter % this.seedProduction === 0) this.createSeed(e);
       counter++;
     });
 
     const animate = () => {
       ctx.clearRect(0, 0, this.xDim, this.yDim);
-
       for (let i = 0; i < this.seeds.length; i++) {
         let seed = this.seeds[i];
         if (seed.lifespan > 0) {
           seed.update(this.xDim, this.yDim, ctx);
         } else {
-          this.createBloom(seed);
+          this.createFlower(seed);
           this.seeds.splice(i, 1);
           i--;
         }
@@ -157,6 +156,7 @@ class Animation {
         let bloom = this.blooms[i];
         if (bloom.lifespan > 0) {
           bloom.update(this.xDim, this.yDim, ctx);
+
         } else {
           this.blooms.splice(i, 1);
           i--;
@@ -192,25 +192,22 @@ class Bloom {
     this.dx = dx;
     this.dy = dy;
     this.radius = radius;
-    this.color = this.randomColor();
-    this.lifespan = Math.random() * 100 + 100;
+
+    this.lifespan = Math.random() * 100 + 200;
+    this.img = this.flowerImg();
+    this.angle = 0;
+    this.size = 8;
   }
 
-  randomColor() {
-    const colors = [
-      '#D6D666',
-      '#AC8CF7',
-      '#B8336A',
-      '#FF4F5D',
-      '#09BEE2'
-    ];
-
-    return colors[Math.floor(Math.random() * colors.length)];
+  flowerImg() {
+    const img = new Image();
+    const imgNum = Math.floor(Math.random() * 12 + 1);
+    img.src = `./assets/images/flowers/${imgNum}.png`;
+    return img;
   }
+
 
   update(xDim, yDim, ctx) {
-    const gravity = .1;
-
     if (this.x + this.radius > xDim || this.x - this.radius < 0) {
       this.dx = -this.dx;
     }
@@ -219,25 +216,29 @@ class Bloom {
       this.dy = -this.dy;
     }
 
-    this.dx = this.dx * 0.95;
-    this.dy = this.dy * 0.95;
-
+    this.dx *= 0.95;
+    this.dy *= 0.95;
     this.x += this.dx;
     this.y += this.dy;
     this.lifespan -= 1;
 
-    if (this.radius < 25) {
-      this.radius += 1;
-    }
+    if (this.lifespan > 10) {
+      if (this.size <= this.img.width) this.size += 4;
+    } else this.size *= 0.8;
 
     this.draw(ctx);
   }
 
   draw(ctx) {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius * 2, 0, 2 * Math.PI, false);
-    ctx.fillStyle = this.color;
-    ctx.fill();
+    ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+    ctx.drawImage(
+      this.img,
+      (this.x - (this.size / 2)),
+      (this.y - (this.size / 2)),
+      this.size,
+      this.size
+    );
     ctx.closePath();
   }
 }
@@ -268,10 +269,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const animation = new _animation_js__WEBPACK_IMPORTED_MODULE_0__["default"](canvas.width, canvas.height);
 
-  const seedRate = document.getElementById('range');
-  seedRate.onchange = () => {
-    animation.rate = seedRate.value;
+  document.getElementById('production').onchange = function() {
+    animation.seedProduction = this.value;
   };
+
+  document.getElementById('velocity').onchange = function() {
+    animation.seedVelocity = this.value;
+  };
+
+  // document.getElementById('gravity').onchange = function() {
+  //   animation.seedGravity = this.value;
+  // };
 
   animation.render(canvas);
 });
@@ -295,11 +303,12 @@ class Seed {
     this.dx = dx;
     this.dy = dy;
     this.radius = radius;
+
     this.lifespan = Math.random() * 100 + 200;
-    this.color = this.randomColor();
+    this.color = this.seedColor();
   }
 
-  randomColor() {
+  seedColor() {
     const colors = [
       '#a1805d',
       '#3b5c50',
@@ -341,86 +350,6 @@ class Seed {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Seed);
-
-
-/***/ }),
-
-/***/ "./js/test.js":
-/*!********************!*\
-  !*** ./js/test.js ***!
-  \********************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-class Flower {
-  constructor(x, y, dx, dy, radius) {
-    this.x = x;
-    this.y = y;
-    this.dx = dx;
-    this.dy = dy;
-    this.radius = radius;
-    this.lifespan = Math.random() * 100 + 300;
-    this.img = this.flowerImg();
-  }
-
-  flowerImg() {
-    const img = new Image();
-    img.src = './assets/images/flowers/8.png';
-
-    return img;
-  }
-
-  createFlowerCanvas() {
-    const flower = document.createElement('canvas');
-    flower.width = this.radius * 2;
-    flower.height = this.radius * 2;
-
-    const fctx = flower.getContext('2d');
-
-    fctx.beginPath();
-    fctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-    fctx.fill();
-
-    fctx.globalCompositeOperation = 'source-atop';
-    fctx.drawImg(this.img, this.x, this.y);
-    fctx.globalCompositeOperation = 'source-over';
-
-    return flower;
-  }
-
-
-  update(xDim, yDim, ctx) {
-    const gravity = .1;
-
-    if (this.x + this.radius > xDim || this.x - this.radius < 0) {
-      this.dx = -this.dx;
-    }
-
-    if (this.y + this.radius > yDim || this.y - this.radius < 0) {
-      this.dy = -this.dy;
-    }
-
-    this.dx = this.dx * 0.95;
-    this.dy = this.dy * 0.95;
-
-    this.x += this.dx;
-    this.y += this.dy;
-    this.lifespan -= 1;
-
-    this.createFlowerCanvas(ctx);
-  }
-
-  // draw(ctx) {
-  //   ctx.beginPath();
-  //   ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-  //   ctx.fill();
-  //   ctx.closePath();
-  // }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Flower);
 
 
 /***/ })

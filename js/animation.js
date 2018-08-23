@@ -1,6 +1,5 @@
 import Seed from './seed.js';
 import Bloom from './bloom.js';
-import Flower from './test.js';
 
 class Animation {
   constructor(xDim, yDim) {
@@ -8,19 +7,21 @@ class Animation {
     this.yDim = yDim;
     this.seeds = [];
     this.blooms = [];
-    this.rate = 7;
+    this.seedProduction = 7;
+    this.seedVelocity = 20;
+    this.seedGravity = 0.1;
   }
 
   createSeed(e) {
     const { x, y } = e;
-    const dx = ((Math.random() - 0.5) * 20) + 5;
-    const dy = ((Math.random() - 0.5) * 20) + 5;
-    const radius = Math.random() * 3 + 6;
+    const dx = ((Math.random() - 0.5) * this.seedVelocity);
+    const dy = ((Math.random() - 0.5) * this.seedVelocity);
+    const radius = Math.random() * 3 + 2;
 
     this.seeds.push(new Seed(x, y, dx, dy, radius));
   }
 
-  createBloom(seed) {
+  createFlower(seed) {
     this.blooms.push(new Bloom(
       seed.x,
       seed.y,
@@ -35,19 +36,18 @@ class Animation {
     let counter = 1;
 
     canvas.addEventListener('mousemove', e => {
-      if (counter % this.rate === 0) this.createSeed(e);
+      if (counter % this.seedProduction === 0) this.createSeed(e);
       counter++;
     });
 
     const animate = () => {
       ctx.clearRect(0, 0, this.xDim, this.yDim);
-
       for (let i = 0; i < this.seeds.length; i++) {
         let seed = this.seeds[i];
         if (seed.lifespan > 0) {
           seed.update(this.xDim, this.yDim, ctx);
         } else {
-          this.createBloom(seed);
+          this.createFlower(seed);
           this.seeds.splice(i, 1);
           i--;
         }
@@ -57,6 +57,7 @@ class Animation {
         let bloom = this.blooms[i];
         if (bloom.lifespan > 0) {
           bloom.update(this.xDim, this.yDim, ctx);
+
         } else {
           this.blooms.splice(i, 1);
           i--;

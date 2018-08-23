@@ -5,11 +5,12 @@ class Seed {
     this.dx = dx;
     this.dy = dy;
     this.radius = radius;
+
     this.lifespan = Math.random() * 100 + 200;
-    this.color = this.randomColor();
+    this.color = this.seedColor();
   }
 
-  randomColor() {
+  seedColor() {
     const colors = [
       '#a1805d',
       '#3b5c50',
