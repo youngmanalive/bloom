@@ -10,7 +10,7 @@ Bloom is a mouseover visualization written in HTML5 Canvas and Vanilla JavaScrip
 
 Bloom was inspired by a love of floral combinations and simple animations.
 
-##### Object Oriented Programming
+#### Object Oriented Programming
 
 
 A Seed and Bloom class are used to initialize and track each object's values. A Randomized lifespan determines how long each object will live on the canvas. Once a Seed lifecycle has ended, we pass in the seed's values to create a new Bloom. Objects are stored in an array, updating each object using a `for` loop in our animate function. As a Bloom ends it's lifecycle, we splice it out of the array.
@@ -73,7 +73,7 @@ createSeed(e) {
 }
 ```
 
-##### Control Settings
+#### Control Settings
 
 ![1](assets/gifs/2.gif)
 
