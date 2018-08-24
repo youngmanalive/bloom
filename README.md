@@ -10,10 +10,10 @@ Bloom is a mouseover visualization written in HTML5 Canvas and Vanilla JavaScrip
 
 Bloom was inspired by a love of floral combinations and simple animations.
 
-#### Object Oriented Programming
+##### Object Oriented Programming
 
 
-A Seed and Bloom class are used to initialize and track each object's values. A Randomized lifespan determines how long each object will live on the canvas. Once a Seed lifecycle has ended, we pass in the seeds values to create the new Bloom. Objects are stored in an array, updating each object using a `for` loop in our animate function. As a Bloom ends it's lifecycle, we splice it out of the array.
+A Seed and Bloom class are used to initialize and track each object's values. A Randomized lifespan determines how long each object will live on the canvas. Once a Seed lifecycle has ended, we pass in the seed's values to create a new Bloom. Objects are stored in an array, updating each object using a `for` loop in our animate function. As a Bloom ends it's lifecycle, we splice it out of the array.
 
 ```JavaScript
 // animation.js
@@ -25,12 +25,17 @@ render(canvas) {
 
     for (let i = 0; i < this.objects.length; i++) {
       let object = this.objects[i];
+
+      // Check the object's remaining lifespan
       if (object.lifespan > 0) {
+        // Update to canvas
         object.update(this.xDim, this.yDim, ctx);
       } else {
         if (object instanceof Seed) {
+          // Initialize bloom using seed values
           this.objects[i] = this.createBloom(object);
         } else {
+          // Remove bloom
           this.objects.splice(i, 1);
           i--;
         }
@@ -43,7 +48,7 @@ render(canvas) {
 ```
 
 
-A simple mousemove event listener is added to our Animation class to initialize the Seed objects.
+A mousemove event listener is added to our Animation class to initialize the Seed objects.
 
 ```JavaScript
 // animation.js
@@ -68,12 +73,11 @@ createSeed(e) {
 }
 ```
 
-#### Control Settings
+##### Control Settings
 
 ![1](assets/gifs/2.gif)
 
-Control settings can be adjusted to change the seed production rate and velocity in which they are ejected.
-This is accomplished by obtaining the value of each input range and updating the properties in our Animation class.
+Control settings can be adjusted to change the seed production rate and velocity in which they are ejected. This is accomplished by obtaining the value of each input range and updating the properties in our Animation.
 
 ```JavaScript
 // main.js
@@ -107,3 +111,6 @@ canvas.addEventListener('mousemove', e => {
   counter++;
 });
 ```
+
+---
+Bloom PNGs provided by [freepik](https://www.freepik.com).
