@@ -1,6 +1,51 @@
-
 body {
   position: relative;
+}
+
+#modal {
+  display: block;
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(40, 0, 60, 0.7);
+}
+
+#modal-content {
+  position: absolute;
+  margin: auto;
+  padding: 20px 25px;
+  max-width: 300px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #B88C9E;
+  border-radius: 20px;
+  background-color: #FFE8F2;
+  color: #754CB2;
+  box-shadow: 0 0 5px;
+}
+
+#close-modal {
+  font-size: 25px;
+  float: right;
+}
+
+.modal-text {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font-size: 20px;
+  padding: 0;
+}
+
+.modal-text h1 {
+  font-family: 'Bonbon', cursive;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  font-size: 70px;
 }
 
 .controls-container {
@@ -17,10 +62,10 @@ body {
   top: 15px;
   right: 15px;
   border: 1px solid grey;
-  border-radius: 5px;
+  border-radius: 10px;
   background-color: white;
   box-shadow: 1px 1px 5px grey;
-  z-index: 2;
+  z-index: 1;
 }
 
 .controls > * {
@@ -38,13 +83,6 @@ canvas {
   position: relative;
 }
 
-/* canvas:hover {
-  cursor: url('../assets/images/cursor.png') 16 16, auto;
-} */
-
-input {
-  /* padding: 5px 0; */
-}
 
 #production {
   direction: rtl;
@@ -54,4 +92,14 @@ input {
   display: flex;
   justify-content: space-around;
   padding: 10px 5px;
+}
+
+.links img {
+  height: 30px;
+  width: 30px;
+}
+
+#close-modal:hover, #open-modal:hover, .links img:hover {
+  cursor: pointer;
+  opacity: 0.7;
 }

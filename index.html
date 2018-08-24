@@ -8,11 +8,19 @@
     <link rel="stylesheet" type="text/css" href="css/reset.css">
     <link rel="stylesheet" type="text/css" href="css/index.css">
   </head>
-
   <body>
-
+    <div id='modal'>
+      <div id='modal-content'>
+        <span id='close-modal'>&times;</span>
+        <div class="modal-text">
+          <h1>Bloom!</h1>
+          <p>A visual experiment written in HTML Canvas and Vanilla JS.</p>
+          <p>Move your cursor across the screen and sew some seeds!
+            Check out the control settings for some interesting effects.</p>
+        </div>
+      </div>
+    </div>
     <div class='view-container'>
-
       <div class='controls-container'>
         <div class='controls'>
           <h1 class='title'>Bloom</h1>
@@ -20,25 +28,19 @@
           <input type="range" id="production" value="3" min="1" max="15" />
           <label>Velocity</label>
           <input type="range" id="velocity" value="15" min="1" max="20" />
-          <!-- <label>Gravity</label> -->
-          <!-- <input type="range" id="gravity" value="1" min="1" max="5" /> -->
           <div class='links'>
             <a href='https://github.com/youngmanalive/bloom' target="_blank">
-              <img src='assets/images/github.png' height=32 width=32 />
+              <img src='assets/images/github.png' />
             </a>
             <a href='https://linkedin.com/in/nathanharris-sf' target="_blank">
-              <img src='assets/images/linkedin.png' height=32 width=32 />
+              <img src='assets/images/linkedin.png' />
             </a>
+            <img id='open-modal' src='assets/images/info.png' />
           </div>
         </div>
       <div>
-
-      <canvas></canvas>
+      <canvas id='canvas'></canvas>
     </div>
-
-
-
-
     <script src="./dist/bundle.js"></script>
   </body>
 

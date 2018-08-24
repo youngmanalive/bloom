@@ -104,11 +104,11 @@ class Animation {
   constructor(xDim, yDim) {
     this.xDim = xDim;
     this.yDim = yDim;
-    this.seeds = [];
-    this.blooms = [];
+    this.objects = [];
     this.seedProduction = 7;
     this.seedVelocity = 20;
     this.seedGravity = 0.1;
+    // this.bloomSound = new Audio('assets/sounds/bloom.mp3');
   }
 
   createSeed(e) {
@@ -117,17 +117,17 @@ class Animation {
     const dy = ((Math.random() - 0.5) * this.seedVelocity);
     const radius = Math.random() * 3 + 2;
 
-    this.seeds.push(new _seed_js__WEBPACK_IMPORTED_MODULE_0__["default"](x, y, dx, dy, radius));
+    this.objects.push(new _seed_js__WEBPACK_IMPORTED_MODULE_0__["default"](x + 15, y + 5, dx, dy, radius));
   }
 
-  createFlower(seed) {
-    this.blooms.push(new _bloom_js__WEBPACK_IMPORTED_MODULE_1__["default"](
+  createBloom(seed) {
+    return new _bloom_js__WEBPACK_IMPORTED_MODULE_1__["default"](
       seed.x,
       seed.y,
       seed.dx,
       seed.dy,
       seed.radius
-    ));
+    );
   }
 
   render(canvas) {
@@ -135,31 +135,28 @@ class Animation {
     let counter = 1;
 
     canvas.addEventListener('mousemove', e => {
-      if (counter % this.seedProduction === 0) this.createSeed(e);
+      if (counter % this.seedProduction === 0) {
+        this.createSeed(e);
+        counter = 1;
+      }
       counter++;
     });
 
     const animate = () => {
       ctx.clearRect(0, 0, this.xDim, this.yDim);
-      for (let i = 0; i < this.seeds.length; i++) {
-        let seed = this.seeds[i];
-        if (seed.lifespan > 0) {
-          seed.update(this.xDim, this.yDim, ctx);
-        } else {
-          this.createFlower(seed);
-          this.seeds.splice(i, 1);
-          i--;
-        }
-      }
 
-      for (let i = 0; i < this.blooms.length; i++) {
-        let bloom = this.blooms[i];
-        if (bloom.lifespan > 0) {
-          bloom.update(this.xDim, this.yDim, ctx);
-
+      for (let i = 0; i < this.objects.length; i++) {
+        let object = this.objects[i];
+        if (object.lifespan > 0) {
+          object.update(this.xDim, this.yDim, ctx);
         } else {
-          this.blooms.splice(i, 1);
-          i--;
+          if (object instanceof _seed_js__WEBPACK_IMPORTED_MODULE_0__["default"]) {
+            this.objects[i] = this.createBloom(object);
+            // this.bloomSound.play();
+          } else {
+            this.objects.splice(i, 1);
+            i--;
+          }
         }
       }
 
@@ -168,7 +165,6 @@ class Animation {
 
     animate();
   }
-
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Animation);
@@ -262,25 +258,34 @@ __webpack_require__.r(__webpack_exports__);
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const canvas = document.querySelector('canvas');
+  // Modal Functions
+  const modal = document.getElementById('modal');
+  document.getElementById('close-modal').onclick = () => {
+    modal.style.display = 'none';
+  };
+  document.getElementById('open-modal').onclick = () => {
+    modal.style.display = 'block';
+  };
+  window.onclick = e => {
+    if (e.target === modal) modal.style.display = 'none';
+  };
 
+  // Grab Canvas
+  const canvas = document.querySelector('canvas');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
+  // Create Animation
   const animation = new _animation_js__WEBPACK_IMPORTED_MODULE_0__["default"](canvas.width, canvas.height);
 
   document.getElementById('production').onchange = function() {
     animation.seedProduction = this.value;
   };
-
   document.getElementById('velocity').onchange = function() {
     animation.seedVelocity = this.value;
   };
 
-  // document.getElementById('gravity').onchange = function() {
-  //   animation.seedGravity = this.value;
-  // };
-
+  // Begin Animation
   animation.render(canvas);
 });
 
@@ -306,6 +311,7 @@ class Seed {
 
     this.lifespan = Math.random() * 100 + 200;
     this.color = this.seedColor();
+    // this.bounceSound = new Audio('assets/sounds/bounce.mp3');
   }
 
   seedColor() {
@@ -325,10 +331,12 @@ class Seed {
 
     if (this.x + this.radius > xDim || this.x - this.radius < 0) {
       this.dx = -this.dx;
+      // this.bounceSound.play();
     }
 
     if (this.y + this.radius > yDim || this.y - this.radius < 0) {
       this.dy = -this.dy;
+      // this.bounceSound.play();
     } else {
       this.dy += gravity;
     }

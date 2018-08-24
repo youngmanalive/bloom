@@ -5,11 +5,11 @@ class Animation {
   constructor(xDim, yDim) {
     this.xDim = xDim;
     this.yDim = yDim;
-    this.seeds = [];
-    this.blooms = [];
+    this.objects = [];
     this.seedProduction = 7;
     this.seedVelocity = 20;
     this.seedGravity = 0.1;
+    // this.bloomSound = new Audio('assets/sounds/bloom.mp3');
   }
 
   createSeed(e) {
@@ -18,17 +18,17 @@ class Animation {
     const dy = ((Math.random() - 0.5) * this.seedVelocity);
     const radius = Math.random() * 3 + 2;
 
-    this.seeds.push(new Seed(x, y, dx, dy, radius));
+    this.objects.push(new Seed(x + 15, y + 5, dx, dy, radius));
   }
 
-  createFlower(seed) {
-    this.blooms.push(new Bloom(
+  createBloom(seed) {
+    return new Bloom(
       seed.x,
       seed.y,
       seed.dx,
       seed.dy,
       seed.radius
-    ));
+    );
   }
 
   render(canvas) {
@@ -36,31 +36,28 @@ class Animation {
     let counter = 1;
 
     canvas.addEventListener('mousemove', e => {
-      if (counter % this.seedProduction === 0) this.createSeed(e);
+      if (counter % this.seedProduction === 0) {
+        this.createSeed(e);
+        counter = 1;
+      }
       counter++;
     });
 
     const animate = () => {
       ctx.clearRect(0, 0, this.xDim, this.yDim);
-      for (let i = 0; i < this.seeds.length; i++) {
-        let seed = this.seeds[i];
-        if (seed.lifespan > 0) {
-          seed.update(this.xDim, this.yDim, ctx);
-        } else {
-          this.createFlower(seed);
-          this.seeds.splice(i, 1);
-          i--;
-        }
-      }
 
-      for (let i = 0; i < this.blooms.length; i++) {
-        let bloom = this.blooms[i];
-        if (bloom.lifespan > 0) {
-          bloom.update(this.xDim, this.yDim, ctx);
-
+      for (let i = 0; i < this.objects.length; i++) {
+        let object = this.objects[i];
+        if (object.lifespan > 0) {
+          object.update(this.xDim, this.yDim, ctx);
         } else {
-          this.blooms.splice(i, 1);
-          i--;
+          if (object instanceof Seed) {
+            this.objects[i] = this.createBloom(object);
+            // this.bloomSound.play();
+          } else {
+            this.objects.splice(i, 1);
+            i--;
+          }
         }
       }
 
@@ -69,7 +66,6 @@ class Animation {
 
     animate();
   }
-
 }
 
 export default Animation;

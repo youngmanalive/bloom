@@ -8,6 +8,7 @@ class Seed {
 
     this.lifespan = Math.random() * 100 + 200;
     this.color = this.seedColor();
+    // this.bounceSound = new Audio('assets/sounds/bounce.mp3');
   }
 
   seedColor() {
@@ -27,10 +28,12 @@ class Seed {
 
     if (this.x + this.radius > xDim || this.x - this.radius < 0) {
       this.dx = -this.dx;
+      // this.bounceSound.play();
     }
 
     if (this.y + this.radius > yDim || this.y - this.radius < 0) {
       this.dy = -this.dy;
+      // this.bounceSound.play();
     } else {
       this.dy += gravity;
     }
