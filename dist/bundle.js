@@ -104,11 +104,10 @@ class Animation {
   constructor(xDim, yDim) {
     this.xDim = xDim;
     this.yDim = yDim;
+
     this.objects = [];
-    this.seedProduction = 7;
-    this.seedVelocity = 20;
-    this.seedGravity = 0.1;
-    // this.bloomSound = new Audio('assets/sounds/bloom.mp3');
+    this.seedProduction = 3;
+    this.seedVelocity = 10;
   }
 
   createSeed(e) {
@@ -117,17 +116,11 @@ class Animation {
     const dy = ((Math.random() - 0.5) * this.seedVelocity);
     const radius = Math.random() * 3 + 2;
 
-    this.objects.push(new _seed_js__WEBPACK_IMPORTED_MODULE_0__["default"](x + 15, y + 5, dx, dy, radius));
+    this.objects.push(new _seed_js__WEBPACK_IMPORTED_MODULE_0__["default"](x, y, dx, dy, radius));
   }
 
   createBloom(seed) {
-    return new _bloom_js__WEBPACK_IMPORTED_MODULE_1__["default"](
-      seed.x,
-      seed.y,
-      seed.dx,
-      seed.dy,
-      seed.radius
-    );
+    return new _bloom_js__WEBPACK_IMPORTED_MODULE_1__["default"](seed.x, seed.y, seed.dx, seed.dy);
   }
 
   render(canvas) {
@@ -145,6 +138,12 @@ class Animation {
     const animate = () => {
       ctx.clearRect(0, 0, this.xDim, this.yDim);
 
+      const grad = ctx.createLinearGradient(0, 0, 0, this.xDim/2);
+      grad.addColorStop(0, '#7DCDF6');
+      grad.addColorStop(1, '#2DB6ED');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, this.xDim, this.yDim);
+
       for (let i = 0; i < this.objects.length; i++) {
         let object = this.objects[i];
         if (object.lifespan > 0) {
@@ -152,7 +151,6 @@ class Animation {
         } else {
           if (object instanceof _seed_js__WEBPACK_IMPORTED_MODULE_0__["default"]) {
             this.objects[i] = this.createBloom(object);
-            // this.bloomSound.play();
           } else {
             this.objects.splice(i, 1);
             i--;
@@ -182,22 +180,23 @@ class Animation {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 class Bloom {
-  constructor(x, y, dx, dy, radius) {
+  constructor(x, y, dx, dy) {
     this.x = x;
     this.y = y;
     this.dx = dx;
     this.dy = dy;
-    this.radius = radius;
 
+    this.radius = 1;
     this.lifespan = Math.random() * 100 + 200;
+    this.size = 8;
     this.img = this.flowerImg();
     this.angle = 0;
-    this.size = 8;
+    this.rotation = (Math.random() - 0.5) * 3;
   }
 
   flowerImg() {
     const img = new Image();
-    const imgNum = Math.floor(Math.random() * 12 + 1);
+    const imgNum = Math.floor(Math.random() * 10 + 1);
     img.src = `./assets/images/flowers/${imgNum}.png`;
     return img;
   }
@@ -217,12 +216,17 @@ class Bloom {
     this.x += this.dx;
     this.y += this.dy;
     this.lifespan -= 1;
+    this.angle += this.rotation;
 
     if (this.lifespan > 10) {
       if (this.size <= this.img.width) this.size += 4;
     } else this.size *= 0.8;
 
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle * (Math.PI/180));
     this.draw(ctx);
+    ctx.restore();
   }
 
   draw(ctx) {
@@ -230,8 +234,8 @@ class Bloom {
     ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
     ctx.drawImage(
       this.img,
-      (this.x - (this.size / 2)),
-      (this.y - (this.size / 2)),
+      (0 - (this.size / 2)),
+      (0 - (this.size / 2)),
       this.size,
       this.size
     );
@@ -278,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Create Animation
   const animation = new _animation_js__WEBPACK_IMPORTED_MODULE_0__["default"](canvas.width, canvas.height);
 
+  // Animation Controls
   document.getElementById('production').onchange = function() {
     animation.seedProduction = this.value;
   };
@@ -311,16 +316,11 @@ class Seed {
 
     this.lifespan = Math.random() * 100 + 200;
     this.color = this.seedColor();
-    // this.bounceSound = new Audio('assets/sounds/bounce.mp3');
   }
 
   seedColor() {
     const colors = [
-      '#a1805d',
-      '#3b5c50',
-      '#627356',
-      '#aa9f74',
-      '#d49a4a'
+      '#a1805d', '#3b5c50', '#627356', '#aa9f74', '#d49a4a'
     ];
 
     return colors[Math.floor(Math.random() * colors.length)];
@@ -331,12 +331,10 @@ class Seed {
 
     if (this.x + this.radius > xDim || this.x - this.radius < 0) {
       this.dx = -this.dx;
-      // this.bounceSound.play();
     }
 
     if (this.y + this.radius > yDim || this.y - this.radius < 0) {
       this.dy = -this.dy;
-      // this.bounceSound.play();
     } else {
       this.dy += gravity;
     }

@@ -1,63 +1,109 @@
 # Bloom
+[Live Site](https://youngmanalive.github.io/bloom)
 
-Bloom is a visually appealing mouseover experiment. Simply scan your cursor over the canvas and watch the seeds emerge. These little seeds will burst into a world of colors and sounds.
+Bloom is a mouseover visualization written in HTML5 Canvas and Vanilla JavaScript. Scatter seeds with a pan of your cursor and watch the blooms come to life! Prepare to be mesmerized!
 
-### MVP
-Upon canvas mouseover, users will experience:
-- [ ] Small seeds emanating from the cursor
-- [ ] Seeds falling and bouncing around the screen
-- [ ] Blooms bursting out of the seeds
-- [ ] Sound effects of blooms opening
-- [ ] Optional settings to change visuals/sound
-
-### Wireframe
-
-Bloom will consist of an interactive canvas. Several controls will be accessible to the user for optional settings. Links to GitHub and LinkedIn will be present.
-
-Objects will appear when the mouse is over the canvas.
-
-![Wireframe](assets/images/wireframe.png)
+![1](assets/gifs/1.gif)
 
 
-### Technologies
-As of this writing the following technologies are being used:
-- HTML Canvas
-- Vanilla JS
-- Webpack
+## Implementation
 
-### Timeline
+Bloom was inspired by a love of floral combinations and simple animations.
 
-#### Weekend
-- Determine project goals and overall theme
-- Watch several tutorials on canvas
+#### Object Oriented Programming
 
-#### Day 1
-Iron out project structure and have working canvas.
 
-- [ ] Get webpack and files up and running
-- [ ] Create working canvas with sample objects
-- [ ] Cursor listener logic and object interaction
-- [ ] Work out canvas gravity
+A Seed and Bloom class are used to initialize and track each object's values. A Randomized lifespan determines how long each object will live on the canvas. Once a Seed lifecycle has ended, we pass in the seeds values to create the new Bloom. Objects are stored in an array, updating each object using a `for` loop in our animate function. As a Bloom ends it's lifecycle, we splice it out of the array.
 
-#### Day 2
-Generate objects and animations.
+```JavaScript
+// animation.js
 
-- [ ] Create color schemes and overall styling
-- [ ] Work on seed and bloom objects
-- [ ] Determine object 'physics'
-- [ ] Figure out randomizing seed/bloom lifecycles
+render(canvas) {
+  // ...
+  const animate = () => {
+    // ...
 
-#### Day 3
-Work on UI and determine sound implementation.
+    for (let i = 0; i < this.objects.length; i++) {
+      let object = this.objects[i];
+      if (object.lifespan > 0) {
+        object.update(this.xDim, this.yDim, ctx);
+      } else {
+        if (object instanceof Seed) {
+          this.objects[i] = this.createBloom(object);
+        } else {
+          this.objects.splice(i, 1);
+          i--;
+        }
+      }
+    }
 
-- [ ] Add options controls to UI
-- [ ] Multiple seed and bloom combinations
-- [ ] Object lifecycles are working on canvas
-- [ ] Begin working on sounds
+    // ...
+  }
+}
+```
 
-#### Day 4
-Finalize project goals.
 
-- [ ] Implement sound effects and finishing touches
-- [ ] Continue potential styling
-- [ ] Overall canvas look is appealing.
+A simple mousemove event listener is added to our Animation class to initialize the Seed objects.
+
+```JavaScript
+// animation.js
+
+// Listen for mouse movement
+render(canvas) {
+  // ...
+  canvas.addEventListener('mousemove', e => {
+    this.createSeed(e);
+  });
+  // ...
+}
+
+// Using the event coordinates, we create a seed at that location.
+createSeed(e) {
+  const { x, y } = e;
+  const dx = ((Math.random() - 0.5) * this.seedVelocity);
+  const dy = ((Math.random() - 0.5) * this.seedVelocity);
+  const radius = Math.random() * 3 + 2;
+
+  this.objects.push(new Seed(x, y, dx, dy, radius));
+}
+```
+
+#### Control Settings
+
+![1](assets/gifs/2.gif)
+
+Control settings can be adjusted to change the seed production rate and velocity in which they are ejected.
+This is accomplished by obtaining the value of each input range and updating the properties in our Animation class.
+
+```JavaScript
+// main.js
+
+document.getElementById('production').onchange = function() {
+  animation.seedProduction = this.value;
+};
+
+document.getElementById('velocity').onchange = function() {
+  animation.seedVelocity = this.value;
+};
+```
+
+Since we cannot control the firing rate of a mousemove listener, we'll use a simple counter to determine how often to create a Seed.
+
+```JavaScript
+// animation.js
+
+// Declare a counter variable.
+let counter = 1;
+
+// Using the current seedProduction value, we can mod the counter
+// and production value to create the Seed at specified intervals.
+// After initializing a Seed, we'll reset the counter to start
+// the cycle over again.
+canvas.addEventListener('mousemove', e => {
+  if (counter % this.seedProduction === 0) {
+    this.createSeed(e);
+    counter = 1;
+  }
+  counter++;
+});
+```

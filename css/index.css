@@ -3,7 +3,7 @@ body {
 }
 
 #modal {
-  display: block;
+  display: none;
   position: fixed;
   z-index: 2;
   left: 0;
@@ -42,7 +42,7 @@ body {
 }
 
 .modal-text h1 {
-  font-family: 'Bonbon', cursive;
+  font-family: 'Marck Script', cursive;
   margin-top: 30px;
   margin-bottom: 10px;
   font-size: 70px;
@@ -63,7 +63,8 @@ body {
   right: 15px;
   border: 1px solid grey;
   border-radius: 10px;
-  background-color: white;
+  background-color: #99E8B4;
+  opacity: .8;
   box-shadow: 1px 1px 5px grey;
   z-index: 1;
 }
@@ -73,13 +74,12 @@ body {
 }
 
 .title {
-  font-family: 'Bonbon', cursive;
+  font-family: 'Marck Script', cursive;
   font-weight: normal;
   margin: 0;
 }
 
 canvas {
-  background-color: #D0F4EA;
   position: relative;
 }
 

@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Create Animation
   const animation = new Animation(canvas.width, canvas.height);
 
+  // Animation Controls
   document.getElementById('production').onchange = function() {
     animation.seedProduction = this.value;
   };
