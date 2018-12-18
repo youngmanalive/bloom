@@ -106,7 +106,7 @@ let counter = 1;
 canvas.addEventListener('mousemove', e => {
   if (counter % this.seedProduction === 0) {
     this.createSeed(e);
-    counter = 1;
+    counter = 0;
   }
   counter++;
 });

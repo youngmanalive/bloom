@@ -9,6 +9,14 @@ class Animation {
     this.objects = [];
     this.seedProduction = 3;
     this.seedVelocity = 10;
+    this.counter = 1;
+    this.run = true;
+    this.onMouseMove = this.onMouseMove.bind(this);
+  }
+
+  reset() {
+    this.run = false;
+    this.objects = [];
   }
 
   createSeed(e) {
@@ -24,17 +32,18 @@ class Animation {
     return new Bloom(seed.x, seed.y, seed.dx, seed.dy);
   }
 
+  onMouseMove(e) {
+    if (this.counter % this.seedProduction === 0) {
+      this.createSeed(e);
+      this.counter = 0;
+    }
+    this.counter++;
+  }
+
   render(canvas) {
     const ctx = canvas.getContext('2d');
-    let counter = 1;
 
-    canvas.addEventListener('mousemove', e => {
-      if (counter % this.seedProduction === 0) {
-        this.createSeed(e);
-        counter = 1;
-      }
-      counter++;
-    });
+    canvas.addEventListener('mousemove', this.onMouseMove);
 
     const animate = () => {
       ctx.clearRect(0, 0, this.xDim, this.yDim);
@@ -59,7 +68,11 @@ class Animation {
         }
       }
 
-      requestAnimationFrame(animate);
+      if (this.run) {
+        requestAnimationFrame(animate);
+      } else {
+        canvas.removeEventListener('mousemove', this.onMouseMove);
+      }
     };
 
     animate();
